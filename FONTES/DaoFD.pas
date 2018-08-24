@@ -129,7 +129,7 @@ type
 implementation
 
 uses dialogs, system.TypInfo, System.Variants,
-  GerarClasseFireDac, GerarClasse.BancoFirebird;//, GerarClasse.BancoMySQL;
+  GerarClasseFireDac, GerarClasse.BancoFirebird, GerarSQL.BancoFireBird;//, GerarClasse.BancoMySQL;
 
 { TQueryFireDac }
 procedure TQueryFireDac.SetParamFileStream(AProp: TRttiProperty; ACampo: string;

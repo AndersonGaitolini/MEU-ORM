@@ -13,7 +13,8 @@ uses
   DaoFD in '..\FONTES\DaoFD.pas',
   GerarClasseFireDac in '..\FONTES\GerarClasseFireDac.pas',
   SplitView in '..\FONTES\SplitView.pas',
-  uClassPerfilEmail in '..\..\LOGLM\Fontes\Classes\uClassPerfilEmail.pas';
+  uClassPerfilEmail in '..\..\LOGLM\Fontes\Classes\uClassPerfilEmail.pas',
+  GerarSQL.BancoFireBird in '..\FONTES\GerarSQL.BancoFireBird.pas';
 
 {$R *.res}
 

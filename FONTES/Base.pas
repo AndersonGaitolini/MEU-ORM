@@ -32,7 +32,7 @@ type
     function GerarSqlSelect(ATabela: TTabela; ACampos: array of string;
       ACamposWhere: array of string): string; overload;
 
-    function GeraSqlCreateTable(ATabela: TTabela): string;
+    function GeraSqlCreateTable(ATabela: TTabela): string; overload;
   end;
 
   TPadraoSql = class(TInterfacedObject, IBaseSql)

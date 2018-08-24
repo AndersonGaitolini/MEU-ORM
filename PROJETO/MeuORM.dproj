@@ -105,6 +105,7 @@
         <DCCReference Include="..\FONTES\GerarClasseFireDac.pas"/>
         <DCCReference Include="..\FONTES\SplitView.pas"/>
         <DCCReference Include="..\..\LOGLM\Fontes\Classes\uClassPerfilEmail.pas"/>
+        <DCCReference Include="..\FONTES\GerarSQL.BancoFireBird.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
