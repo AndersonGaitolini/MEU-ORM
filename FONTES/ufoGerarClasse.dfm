@@ -60,7 +60,6 @@ object foGeraClasse: TfoGeraClasse
       Align = alLeft
       Caption = 'Pacote'
       TabOrder = 3
-      OnClick = btnExecPackageClick
     end
   end
   object Panel2: TPanel
@@ -192,14 +191,22 @@ object foGeraClasse: TfoGeraClasse
       Height = 22
       OnClick = moClick
     end
-    object edBD: TLabeledEdit
+    object btnGetFileClass: TSpeedButton
+      Left = 366
+      Top = 37
+      Width = 30
+      Height = 22
+      Caption = '...'
+      OnClick = btnGetFileClassClick
+    end
+    object edFileBD: TLabeledEdit
       Left = 20
       Top = 14
       Width = 340
       Height = 21
-      EditLabel.Width = 25
+      EditLabel.Width = 41
       EditLabel.Height = 13
-      EditLabel.Caption = 'edBD'
+      EditLabel.Caption = 'edFileBD'
       TabOrder = 0
     end
     object btnConexao: TJvSwitch
@@ -211,6 +218,16 @@ object foGeraClasse: TfoGeraClasse
       TabOrder = 1
       TextPosition = tpLeft
       OnClick = btnConexaoClick
+    end
+    object edFileClass: TLabeledEdit
+      Left = 20
+      Top = 38
+      Width = 340
+      Height = 21
+      EditLabel.Width = 25
+      EditLabel.Height = 13
+      EditLabel.Caption = 'edBD'
+      TabOrder = 2
     end
   end
   object pnlConfig: TPanel
@@ -234,7 +251,7 @@ object foGeraClasse: TfoGeraClasse
       Top = 1
       Width = 737
       Height = 302
-      ActivePage = tsClass
+      ActivePage = tsSQL
       Align = alClient
       TabOrder = 0
       object tsClass: TTabSheet
@@ -326,7 +343,7 @@ object foGeraClasse: TfoGeraClasse
     Top = 178
   end
   object dlgOpen1: TOpenDialog
-    Filter = 'ALL|*.*|FIREBIRD|*.FDB|BPL'#39'S|*.bpl'
+    Filter = 'ALL|*.*|FIREBIRD|*.FDB|ARQUIVO.PAS|*.PAS'
     FilterIndex = 2
     InitialDir = 'C:\'
     Title = 'Selecione o banco de dados'

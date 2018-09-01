@@ -44,6 +44,7 @@ type
 
     FQuery: TFDQuery;
     FSql: IBaseSql;
+    FGeraSql : IBaseGeraSQL;
     FDataSet: TDataSet;
     FParams: IQueryParams;
 
@@ -121,7 +122,7 @@ type
 
     //CREATE, ALTER, DROP: TABLE
 
-    function CreateTable(ATabela: TTabela): boolean;
+//    function CreateTable(ATabela: TTabela): boolean;
 
     property DataSet: TDataSet read FDataSet write SetDataSet;
   end;

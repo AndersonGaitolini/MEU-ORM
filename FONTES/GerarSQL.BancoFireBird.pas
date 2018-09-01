@@ -5,11 +5,19 @@ uses
   Base, Atributos, DB, SysUtils, Classes, System.Rtti;
 
  type
-   TGerarSQLBancoFirebird = class(TInterfacedObject, IBaseSql)
+   TGerarSQLBancoFirebird = class(TInterfacedObject, IBaseGeraSql)
    private
 
    public
      function GeraSqlCreateTable(ATabela: TTabela): string; overload;
+
+     function GeraSqlAlterTable(ATabela: TTabela; ACamposWhere: array of string): string; overload;
+
+     function GeraSqlDropTable(ATabela: TTabela): string; overload;
+
+     function ListaofClass(aUnitFile: string):TStringList; overload;
+
+     function CreateTable(ABanco : String; ATabela: TTabela): boolean;overload;
    published
 
    end;
@@ -17,6 +25,18 @@ uses
 implementation
 
 { TGerarSQLBancoFirebird }
+
+function TGerarSQLBancoFirebird.CreateTable(ABanco: String;
+  ATabela: TTabela): boolean;
+begin
+  Result := false;
+end;
+
+function TGerarSQLBancoFirebird.GeraSqlAlterTable(ATabela: TTabela;
+  ACamposWhere: array of string): string;
+begin
+
+end;
 
 function TGerarSQLBancoFirebird.GeraSqlCreateTable(ATabela: TTabela): string;
 var
@@ -32,7 +52,6 @@ begin
   try
     with ASql do
     begin
-
       Add('CREATE TABLE ' + Atributos.PegaNomeTab(ATabela) + ' (');
       RttiType := TRttiContext.Create.GetType(ATabela);
       Sep1 := '';
@@ -100,6 +119,37 @@ begin
     end;
   finally
     ASql.Free
+  end;
+end;
+
+function TGerarSQLBancoFirebird.GeraSqlDropTable(ATabela: TTabela): string;
+begin
+  Result := '';
+end;
+
+function TGerarSQLBancoFirebird.ListaofClass(aUnitFile: string): TStringList;
+Var
+ RttiType : TRttiType;
+ Lista : TStrings;
+  //Extrair o nome da unit  da property QualifiedName
+  function GetUnitName(lType: TRttiType): string;
+  begin
+    Result := StringReplace(lType.QualifiedName, '.' + lType.Name, '',[rfReplaceAll])
+  end;
+
+begin
+  Result := TStringList.Create;
+  try
+    if (aUnitFile = '')then
+      exit;
+
+    //Lista todos os Tipo da Unit passada por param
+    for RttiType in TRttiContext.Create.GetTypes do
+     if SameText(aUnitFile,GetUnitName(RttiType)) and (RttiType.IsInstance) then
+       Result.Add(RttiType.Name);
+
+  except on E: Exception do
+
   end;
 end;
 

@@ -12,6 +12,18 @@ type
   TTabela = class(TPersistent)
   end;
 
+  IBaseGeraSql = interface
+    ['{7B049A3F-89BD-4245-96EE-396E9541BD20}']
+    function GeraSqlCreateTable(ATabela: TTabela): string; overload;
+
+    function GeraSqlAlterTable(ATabela: TTabela; ACamposWhere: array of string): string; overload;
+
+    function GeraSqlDropTable(ATabela: TTabela): string; overload;
+
+    function ListaofClass(aUnitFile: string):TStringList;
+
+    function CreateTable(ABanco : String; ATabela: TTabela): boolean;
+  end;
   IBaseSql = interface
     ['{3890762A-9CF2-46C3-A75C-62947D3DAD7B}']
 
@@ -32,7 +44,6 @@ type
     function GerarSqlSelect(ATabela: TTabela; ACampos: array of string;
       ACamposWhere: array of string): string; overload;
 
-    function GeraSqlCreateTable(ATabela: TTabela): string; overload;
   end;
 
   TPadraoSql = class(TInterfacedObject, IBaseSql)
@@ -53,8 +64,19 @@ type
     function GerarSqlSelect(ATabela: TTabela; ACampos: array of string;
       ACamposWhere: array of string): string; overload;
 
+  end;
+
+  TPadraoGeraSql = class(TInterfacedObject, IBaseGeraSql)
+  public
     function GeraSqlCreateTable(ATabela: TTabela): string; overload;
 
+    function GeraSqlAlterTable(ATabela: TTabela; ACamposWhere: array of string): string; overload;
+
+    function GeraSqlDropTable(ATabela: TTabela): string; overload;
+
+    function ListaofClass(aUnitFile: string):TStringList; overload;
+
+    function CreateTable(ABanco : String; ATabela: TTabela): boolean; overload;
   end;
 
   IQueryParams = interface
@@ -354,7 +376,97 @@ begin
   end;
 end;
 
-function TPadraoSql.GeraSqlCreateTable(ATabela: TTabela): string;
+function TPadraoGeraSql.CreateTable(ABanco: String; ATabela: TTabela): boolean;
+begin
+  Result := false;
+end;
+
+function TPadraoGeraSql.GeraSqlAlterTable(ATabela: TTabela; ACamposWhere: array of string): string;
+var
+  Atributos: IAtributos;
+  Campo: string;
+  PropRtti: TRttiProperty;
+  RttiType: TRttiType;
+  sText, Sep1, Sep2: string;
+  ASql: TStringList;
+begin
+  Atributos := TAtributos.Create;
+  ASql := TStringList.Create;
+  try
+    with ASql do
+    begin
+      Add('ALTER TABLE ' + Atributos.PegaNomeTab(ATabela) + ' (');
+      RttiType := TRttiContext.Create.GetType(ATabela);
+      Sep1 := '';
+      Sep2 := ' ';
+      for PropRtti in RttiType.GetProperties do
+      begin
+//        for Campo in ACamposWhere do
+
+        case PropRtti.PropertyType.TypeKind of
+          tkInt64:begin
+                    Add('ALTER '+PropRtti.Name+Sep2+'BIGINT'+Sep1);
+                  end;
+
+          tkInteger: begin
+                       Add('ALTER '+PropRtti.Name+Sep2+'INTEGER'+Sep1);
+                     end;
+
+          tkChar: begin
+                    Add('ALTER '+PropRtti.Name+Sep2+'CHAR'+Sep1);
+                  end;
+
+          tkString, tkUString:
+                  begin
+                    Add('ALTER '+PropRtti.Name+Sep2+'VARCHAR()'+Sep1);
+                  end;
+
+          tkFloat:
+          begin
+            if CompareText(PropRtti.PropertyType.Name, 'TDate') = 0 then
+            begin
+              Add('ALTER '+PropRtti.Name+Sep2+'DATE'+Sep1);
+            end
+            else
+            if CompareText(PropRtti.PropertyType.Name, 'TDateTime') = 0 then
+            begin
+              Add('ALTER '+PropRtti.Name+Sep2+'DATE'+Sep1);
+            end
+            else
+            begin
+              Add('ALTER '+PropRtti.Name+Sep2+'DECIMAL(15,2)'+Sep1);
+            end;
+          end;
+
+  //        tkVariant: ShowMessage(PropRtti.Name +' tkVariant: '+ PropRtti.PropertyType.Name);
+
+          tkEnumeration: if CompareText(PropRtti.PropertyType.Name, 'Boolean') = 0 then
+                         begin
+                           Add(PropRtti.Name+Sep2+'SMALINT'+Sep1);
+                         end;
+
+          tkClass : if CompareText(PropRtti.PropertyType.Name, 'TFileStream') = 0 then
+                    begin
+                      Add(PropRtti.Name+Sep2+'BLOB SUB_TYPE 1 SEGMENT SIZE 80'+Sep1);
+                    end
+                    else
+                    begin
+                      Add(PropRtti.Name+Sep2+'BLOB SUB_TYPE 0 SEGMENT SIZE 80'+Sep1);
+                    end
+        else
+          raise Exception.Create('Tipo de campo não conhecido: ' +
+          PropRtti.PropertyType.ToString);
+        end;
+
+        Result := Text;
+      end;
+    end;
+  finally
+    ASql.Free
+  end;
+end;
+
+function TPadraoGeraSql.GeraSqlCreateTable(ATabela: TTabela): string;
 var
   Atributos: IAtributos;
   Campo: string;
@@ -436,6 +548,36 @@ begin
     end;
   finally
     ASql.Free
+  end;
+end;
+
+function TPadraoGeraSql.GeraSqlDropTable(ATabela: TTabela): string;
+begin
+
+end;
+
+function TPadraoGeraSql.ListaofClass(aUnitFile: string): TStringList;
+Var
+ RttiType : TRttiType;
+  //extract the unit name from the  QualifiedName property
+  function GetUnitName(lType: TRttiType): string;
+  begin
+    Result := StringReplace(lType.QualifiedName, '.' + lType.Name, '',[rfReplaceAll])
+  end;
+
+begin
+  Result := TStringList.Create;
+  try
+    if not (FileExists(aUnitFile)) then
+      exit;
+
+    //list all the types of the System.SysUtils unit
+    for RttiType in TRttiContext.Create.GetTypes do
+     if SameText(aUnitFile,GetUnitName(RttiType)) and (RttiType.IsInstance) then
+       Result.Add(RttiType.Name);
+
+  except on E: Exception do
+
   end;
 end;
 

@@ -7,7 +7,7 @@ uses
   System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Buttons,
   JvExControls, JvSwitch, Vcl.Menus, SplitView, Vcl.ComCtrls, System.Rtti,
-  Base;
+  Base, GerarSQL.BancoFireBird, JvBaseDlg, JvSelectDirectory;
 
 type
   TfoGeraClasse = class(TForm)
@@ -20,7 +20,7 @@ type
     btnGerar: TButton;
     Salvar: TSaveDialog;
     pnlMenu: TPanel;
-    edBD: TLabeledEdit;
+    edFileBD: TLabeledEdit;
     btn1: TSpeedButton;
     dlgOpen1: TOpenDialog;
     btnConexao: TJvSwitch;
@@ -39,6 +39,8 @@ type
     mmGerarCLass: TMemo;
     lstClasses: TListBox;
     btnExecPackage: TButton;
+    edFileClass: TLabeledEdit;
+    btnGetFileClass: TSpeedButton;
     procedure btnSairClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure btnGerarClick(Sender: TObject);
@@ -50,19 +52,20 @@ type
     procedure opcLimpartabelaClick(Sender: TObject);
     procedure opcLimparPasClick(Sender: TObject);
     procedure moClick(Sender: TObject);
-    procedure btnExecPackageClick(Sender: TObject);
+    procedure btnGetFileClassClick(Sender: TObject);
   private
     { Private declarations }
     procedure AtualizaBotao;
-    procedure PegaTabelas;
+    procedure PreencheTabelas;
+    procedure PreencheClasses;
     procedure GeraClasse;
-    procedure GeraSQL;
     procedure SalvarArquivo;
+    procedure GeraSQL;
+
   public
     { Public declarations }
     SplitView : TSplitView;
 
-    procedure CarregaPKG;
     procedure CriaPacote;
     procedure abrirPacote;
     procedure CarregaDLL;
@@ -130,11 +133,18 @@ end;
 
 procedure TfoGeraClasse.btn1Click(Sender: TObject);
 begin
-  if dlgOpen1.Execute then
-   edBD.Text := dlgOpen1.FileName;
+  if DirectoryExists(ExtractFileDir(Trim(edFileBD.Text))) then
+    dlgOpen1.InitialDir := Trim(edFileBD.Text)
+  else
+    dlgOpen1.InitialDir := ExtractFileDir(ParamStr(0));
 
-  if edBD.CanFocus then
-   edBD.SelStart := Length(Trim(edBD.Text));
+  dlgOpen1.FilterIndex := 2;
+
+  if dlgOpen1.Execute then
+   edFileBD.Text := dlgOpen1.FileName;
+
+  if edFileBD.CanFocus then
+   edFileBD.SelStart := Length(Trim(edFileBD.Text));
 end;
 
 procedure TfoGeraClasse.btnInfoClick(Sender: TObject);
@@ -163,9 +173,10 @@ begin
     end
     else
     begin
-      conORM_FD.Params.Database := Trim(edBD.Text);
+      conORM_FD.Params.Database := Trim(edFileBD.Text);
       conORM_FD.Connected := True;
-      PegaTabelas;
+      PreencheTabelas;
+      PreencheClasses;
     end;
 
 
@@ -180,113 +191,34 @@ begin
   end;
 end;
 
-procedure TfoGeraClasse.btnExecPackageClick(Sender: TObject);
-var
-  Atributos: IAtributos;
-  Campo: string;
-  PropRtti: TRttiProperty;
-  RttiType: TRttiType;
-  sText, Sep1, Sep2: string;
-
-begin
-  mmGerarSQL.Clear;
-  try
-    sText := 'CREATE TABLE ' + UpperCase(copy(TPerfilEmail.ClassName,2,length(TPerfilEmail.ClassName)))  + ' (';
-    mmGerarSQL.Lines.Add('CREATE TABLE ' + UpperCase(copy(TPerfilEmail.ClassName,2,length(TPerfilEmail.ClassName))) + ' (');
-
-    RttiType := TRttiContext.Create.GetType(TPerfilEmail);
-    Sep1 := '';
-    Sep2 := ' ';
-    for PropRtti in RttiType.GetProperties do
-    begin
-    Sep1 := ',';
-      case PropRtti.PropertyType.TypeKind of
-        tkInt64:begin
-                  sText := sText + PropRtti.Name+Sep2+'BIGINT'+Sep1;
-                  mmGerarSQL.Lines.Add(PropRtti.Name+Sep2+'BIGINT'+Sep1)
-                end;
-
-        tkInteger: begin
-                     sText := sText + PropRtti.Name+Sep2+'INTEGER'+Sep1;
-                      mmGerarSQL.Lines.Add(PropRtti.Name+Sep2+'INTEGER'+Sep1);
-                   end;
-
-        tkChar: begin
-                  sText := sText + PropRtti.Name+Sep2+'CHAR'+Sep1;
-                  mmGerarSQL.Lines.Add(PropRtti.Name+Sep2+'CHAR'+Sep1);
-                end;
-
-        tkString, tkUString:
-                begin
-                  sText := sText + PropRtti.Name+Sep2+'VARCHAR()'+Sep1;
-                  mmGerarSQL.Lines.Add(PropRtti.Name+Sep2+'VARCHAR()'+Sep1);
-                end;
-
-        tkFloat:
-        begin
-          if CompareText(PropRtti.PropertyType.Name, 'TDate') = 0 then
-          begin
-            sText := sText + PropRtti.Name+Sep2+'DATE'+Sep1;
-            mmGerarSQL.Lines.Add(PropRtti.Name+Sep2+'DATE'+Sep1);
-          end
-          else
-          if CompareText(PropRtti.PropertyType.Name, 'TDateTime') = 0 then
-          begin
-            sText := sText + PropRtti.Name+Sep2+'DATE'+Sep1;
-            mmGerarSQL.Lines.Add(PropRtti.Name+Sep2+'DATE'+Sep1);
-          end
-          else
-          begin
-            sText := sText + PropRtti.Name+Sep2+'DECIMAL(15,2)'+Sep1;
-            mmGerarSQL.Lines.Add(PropRtti.Name+Sep2+'DECIMAL(15,2)'+Sep1);
-          end;
-        end;
-
-        tkVariant: ShowMessage(PropRtti.Name +' tkVariant: '+ PropRtti.PropertyType.Name);
-
-        tkEnumeration: if CompareText(PropRtti.PropertyType.Name, 'Boolean') = 0 then
-                       begin
-                         sText := sText + PropRtti.Name+Sep2+'SMALINT'+Sep1;
-                         mmGerarSQL.Lines.Add(PropRtti.Name+Sep2+'DECIMAL(15,2)'+Sep1);
-                       end;
-
-        tkClass : if CompareText(PropRtti.PropertyType.Name, 'TFileStream') = 0 then
-                  begin
-                    sText := sText + PropRtti.Name+Sep2+'BLOB SUB_TYPE 1 SEGMENT SIZE 80'+Sep1;
-                    mmGerarSQL.Lines.Add(PropRtti.Name+Sep2+'BLOB SUB_TYPE 1 SEGMENT SIZE 80'+Sep1);
-                  end
-                  else
-                  begin
-                    sText := sText + PropRtti.Name+Sep2+'BLOB SUB_TYPE 0 SEGMENT SIZE 80'+Sep1;
-                    mmGerarSQL.Lines.Add(PropRtti.Name+Sep2+'BLOB SUB_TYPE 0 SEGMENT SIZE 80'+Sep1);
-                  end
-      else
-        raise Exception.Create('Tipo de campo não conhecido: ' +
-        PropRtti.PropertyType.ToString);
-      end;
-
-      sText := sText + ')';
-      mmGerarSQL.Lines.Add(')');
-    end;
-    mmGerarSQL.Text := sText;
-    pgc1.ActivePage := tsClass;
-  except
-    raise;
-  end;
-end;
-
 procedure TfoGeraClasse.btnGerarClick(Sender: TObject);
 begin
    if pgc1.ActivePage = tsSQL then
-     mmGerarSQL.lines.Text := DM.Dao.GerarClasse;
+     GeraSQL
    else
    if pgc1.ActivePage = tsClass then
    begin
      if DM.conORM_FD.Connected then
        GeraClasse
      else
-       ShowMessage('Base de Dados '+QuotedStr(ExtractFileName(edBD.Text))+ ' não Conectado!');
+       ShowMessage('Base de Dados '+QuotedStr(ExtractFileName(edFileBD.Text))+ ' não Conectado!');
    end;
+end;
+
+procedure TfoGeraClasse.btnGetFileClassClick(Sender: TObject);
+begin
+
+  if DirectoryExists(ExtractFileDir(Trim(edFileClass.Text))) then
+    dlgOpen1.InitialDir := Trim(edFileClass.Text)
+  else
+    dlgOpen1.InitialDir := ExtractFileDir(ParamStr(0));
+
+  dlgOpen1.FilterIndex := 3;
+  if dlgOpen1.Execute then
+  begin
+    edFileClass.Clear;
+    edFileClass.Text := dlgOpen1.FileName;
+  end;
 end;
 
 procedure TfoGeraClasse.btnSairClick(Sender: TObject);
@@ -310,49 +242,6 @@ begin
     aClasse := TObject(GetProcAddress(iHandle, 'TPerfilEmail'));
   end;
 end;
-
-procedure TfoGeraClasse.CarregaPKG;
-var
-Plugin : TObject;
-Hnd : THandle;
-sFile: string;
-aClass : TPersistentClass;
-begin
-  dlgOpen1.FilterIndex := 3;
-  dlgOpen1.InitialDir := ExtractFileDir(ParamStr(0));
-  if dlgOpen1.Execute then
-    sFile := dlgOpen1.FileName;
-
-  if FileExists(sFile) then
-  begin
-    //-- Carrega o pacote
-    Hnd := LoadPackage(sFile);
-
-    if Hnd > 0 then
-    begin
-      aClass := GetClass('TUsuarios');
-      if Assigned(aClass) then
-      begin
-        //-- Cria um objeto da classe do plugin
-        Plugin := aClass.Create;
-        ShowMessage(Plugin.ClassName);
-//        Button1.Action := TPlugin(Plugin).Action;
-//        Button1.Caption := TPlugin(Plugin).Caption;
-      end;
-
-      aClass := GetClass('TPerfilEmail');
-      if Assigned(aClass) then
-      begin
-        //-- Cria um objeto da classe do plugin
-        Plugin := aClass.Create;
-        ShowMessage(Plugin.ClassName);
-//        Button1.Action := TPlugin(Plugin).Action;
-//        Button1.Caption := TPlugin(Plugin).Caption;
-      end;
-    end;
-  end;
-end;
-
 
 procedure TfoGeraClasse.FormCreate(Sender: TObject);
 begin
@@ -378,6 +267,7 @@ var
   Tabela,
   Classe: string;
 begin
+
   if lstTabelas.Count = 0 then
     Exit;
 
@@ -390,8 +280,22 @@ begin
 end;
 
 procedure TfoGeraClasse.GeraSQL;
+var GerarSQLFB : TGerarSQLBancoFirebird;
+    Tabela : string;
+    Banco  : string;
 begin
-//
+   GerarSQLFB := TGerarSQLBancoFirebird.Create;
+   try
+     try
+
+       Tabela := lstClasses.items[lstClasses.ItemIndex];
+       Tabela := GerarSQLFB.GeraSqlCreateTable(TTabela(Tabela));
+       mmGerarSQL.Lines.Text := Tabela;
+     finally
+       GerarSQLFB.Free;
+     end;
+   except on E: Exception do
+   end;
 end;
 
 procedure TfoGeraClasse.moClick(Sender: TObject);
@@ -413,9 +317,41 @@ end;
 procedure TfoGeraClasse.opcLimpartabelaClick(Sender: TObject);
 begin
   lstTabelas.Clear;
+  lstClasses.Clear;
 end;
 
-procedure TfoGeraClasse.PegaTabelas;
+procedure TfoGeraClasse.PreencheClasses;
+var GerarSQLFB : TGerarSQLBancoFirebird;
+    Lista : TStrings;
+    aFile : string;
+    I: integer;
+begin
+   lstClasses.Items.Clear;
+   Lista := TStrings.Create;
+   GerarSQLFB := TGerarSQLBancoFirebird.Create;
+   try
+     try
+       aFile := '';
+       if FileExists(Trim(edFileClass.Text))  then
+        aFile :=  ChangeFileExt(ExtractFileName(Trim(edFileClass.Text)),EmptyStr);
+
+       Lista := GerarSQLFB.ListaofClass(aFile);
+       for I := 0 to Lista.Count-1 do
+         lstClasses.Items.Add(Lista.Strings[i]);
+
+       lstClasses.ItemIndex := 0;
+       mmGerarSQL.Lines.Text := GerarSQLFB.GeraSqlCreateTable(TTabela(lstClasses.Items[lstClasses.ItemIndex]));
+     finally
+       GerarSQLFB.Free;
+     end;
+   except
+
+   end;
+
+
+end;
+
+procedure TfoGeraClasse.PreencheTabelas;
 const
   SQL: string = 'SELECT RDB$RELATION_NAME FROM RDB$RELATIONS ' +
                 'WHERE RDB$VIEW_BLR IS NULL and ' +
