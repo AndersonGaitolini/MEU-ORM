@@ -8,7 +8,7 @@ uses
 type
   TGerarClasseBancoFirebird = class(TInterfacedObject, IBaseGerarClasseBanco)
   private
-    function GetTypeField(Tipo, SubTipo, Precisao: Integer): string;
+    function GetTypeField(Tipo, SubTipo, Precisao: Integer; Descricao: string; ADescrToTypes, ASmlIntToBool: Boolean): string;
   public
      //obtem sql com nome, tamanho e tipo dos campos
     function GetSQLCamposTabela(ATabela: string): string;
@@ -16,18 +16,19 @@ type
     //obtem sql com chave primárias
     function GetSQLCamposPK(ATabela: string): string;
 
-    procedure GerarFields(Ads: TDataSet; AResult: TStrings);
-    procedure GerarProperties(Ads: TDataSet; AResult: TStrings; ACamposPK: string);
+    procedure GerarFields(Ads: TDataSet; AResult: TStrings; ADescrToTypes, ASmlIntToBool: Boolean); overload;
+    procedure GerarProperties(Ads: TDataSet; AResult: TStrings;ACamposPK: string; ADescrToTypes, ASmlIntToBool: Boolean); overload;
   end;
 
 implementation
 
-procedure TGerarClasseBancoFirebird.GerarFields(Ads: TDataSet; AResult: TStrings);
+procedure TGerarClasseBancoFirebird.GerarFields(Ads: TDataSet; AResult: TStrings; ADescrToTypes, ASmlIntToBool: Boolean);
 var
   Tipo,
   SubTipo,
   Precisao: Integer;
-  Nome: string;
+  Nome, Descricao: string;
+  DescrType: Boolean;
 begin
   AResult.Add('  private');
   ADs.First;
@@ -37,18 +38,22 @@ begin
     SubTipo := Ads.FieldByName('subtipo').AsInteger;
     Precisao := Ads.FieldByName('precisao').AsInteger;
     Nome := Trim(Ads.FieldByName('nome').AsString);
+    Descricao := Trim(Ads.FieldByName('Descricao').AsString);
     Nome := 'F' + UpperCase(Nome[1]) + LowerCase(Copy(Nome, 2, Length(Nome)));
-    AResult.Add('    ' + Nome + ': ' + GetTypeField(Tipo, SubTipo, Precisao) + ';');
+    AResult.Add('    ' + Nome + ': ' + GetTypeField(Tipo, SubTipo, Precisao, Descricao, ADescrToTypes, ASmlIntToBool) + ';');
     Ads.Next;
   end;
 end;
 
-procedure TGerarClasseBancoFirebird.GerarProperties(Ads: TDataSet; AResult: TStrings; ACamposPK: string);
+procedure TGerarClasseBancoFirebird.GerarProperties(Ads: TDataSet; AResult: TStrings;ACamposPK: string; ADescrToTypes, ASmlIntToBool: Boolean);
 var
   Tipo,
   SubTipo,
   Precisao: Integer;
   Nome: string;
+  Dominio: string;
+  Descricao: string;
+
 begin
   AResult.Add('  public');
   ADs.First;
@@ -58,6 +63,7 @@ begin
     SubTipo := Ads.FieldByName('subtipo').AsInteger;
     Precisao := Ads.FieldByName('precisao').AsInteger;
     Nome := Trim(Ads.FieldByName('nome').AsString);
+    Descricao := Trim(Ads.FieldByName('Descricao').AsString);
 
     if pos(Nome, ACamposPK) > 0 then
       AResult.Add('    [attPK]');
@@ -65,7 +71,7 @@ begin
     Nome := UpperCase(Nome[1]) + LowerCase(Copy(Nome, 2, Length(Nome)));
 
     AResult.Add('    property ' +
-                       Nome +': ' + GetTypeField(Tipo, SubTipo, Precisao) +
+                       Nome +': ' + GetTypeField(Tipo, SubTipo, Precisao, Descricao, ADescrToTypes, ASmlIntToBool) +
                        ' read F' + Nome +
                        ' write F' + Nome + ';');
     Ads.Next;
@@ -104,34 +110,57 @@ begin
             'ORDER BY r.RDB$FIELD_POSITION;';
 end;
 
-function TGerarClasseBancoFirebird.GetTypeField(Tipo, SubTipo, Precisao: Integer): string;
+function TGerarClasseBancoFirebird.GetTypeField(Tipo, SubTipo, Precisao: Integer; Descricao: string; ADescrToTypes, ASmlIntToBool: Boolean): string;
+const
+  cBoolean = 'Boolean';
+  cWord    = 'Word';
 begin
+
+  if (ADescrToTypes) and (Tipo <> 7) then
+    Result := Descricao
+  else
   case Tipo of
-    7,
-    8,
-    9,
+    7: begin
+         if ASmlIntToBool then
+          Result := 'Boolean'
+         else
+         if ADescrToTypes then
+           Result := Descricao
+         else
+           Result := 'Word';
+       end;
+
+    08,
+    09: Result := 'Integer';
     10,
-    11,
-    16,                                     //Data type code for the column:
-    27: begin                               //7 = SMALLINT
-          if Precisao = 0 then              //8 = INTEGER
-            Result := 'Integer'             //10 = FLOAT
-          else                              //12 = DATE
-            Result := 'Currency';           //13 = TIME
-        end;                                //14 = CHAR
-    14,                                     //16 = BIGINT
+    11: Result := 'Float';
+    12: Result := 'TDate';
+    13: Result := 'TTime';
+    14: Result := 'Char';
+    16:                                     //Data type code for the column:
+      begin
+        if Precisao = 0 then              //8 = INTEGER
+          Result := 'LongInt'             //10 = FLOAT
+        else                              //12 = DATE
+          Result := 'Double';              //13 = TIME
+      end;                                //14 = CHAR
+                                            //16 = BIGINT
+    27: Result := 'Currency';
     37,                                     //27 = DOUBLE PRECISION
     40: Result := 'string';                 //35 = TIMESTAMP
-    12: Result := 'TDate';                  //37 = VARCHAR
-    13: Result := 'TTime';                  //261 = BLOB
+                                            //37 = VARCHAR
+                                            //261 = BLOB
     35: Result := 'TDateTime';              //Codes for DECIMAL and NUMERIC are the same as for the integer types used to store them
     261:
     begin
-      if SubTipo = 1 then
-        Result := 'TStringStream'
+      if SubTipo = 0 then
+        Result := 'TFileStream'
       else
-        Result := 'TFileStream';
+        Result := 'TStringStream';
     end;
+
+  else
+    Result := 'TUnknown';
   end;
 
 end;

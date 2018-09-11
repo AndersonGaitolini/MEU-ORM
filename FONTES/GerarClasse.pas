@@ -8,6 +8,7 @@ uses
 type
   TGerarClasse = class
   private
+
     function Capitalize(ATexto: String): string;
   protected
     Resultado: TStringList;
@@ -16,6 +17,8 @@ type
     FTabela,
     FUnit,
     FClasse: string;
+    FDescrToTypes: Boolean;
+    FSmlIntToBool: Boolean;
 
     function GetCamposPK: string; virtual; abstract;
 
@@ -23,11 +26,15 @@ type
     procedure GerarFieldsProperties; virtual; abstract;
     procedure GerarRodape;
   public
+
+    property DescrToTypes: Boolean read FDescrToTypes;
+    property SmlIntToBool: Boolean read FSmlIntToBool;
+
     constructor Create(AClasseBanco: IBaseGerarClasseBanco);
     destructor Destroy; override;
 
     function Gerar(ATabela, ANomeUnit: string;
-      ANomeClasse: string = ''): string;
+      ANomeClasse: string = ''; ADescrToTypes: Boolean=False; ASmlIntToBool: Boolean=False): string;
   end;
 
 implementation
@@ -54,9 +61,11 @@ begin
   inherited;
 end;
 
-function TGerarClasse.Gerar(ATabela, ANomeUnit, ANomeClasse: string): string;
+function TGerarClasse.Gerar(ATabela, ANomeUnit, ANomeClasse: string; ADescrToTypes, ASmlIntToBool: Boolean): string;
 begin
   FTabela := ATabela;
+  FSmlIntToBool := ASmlIntToBool;
+  FDescrToTypes := ADescrToTypes;
 
   FUnit := Capitalize(ANomeUnit);
 
@@ -82,9 +91,19 @@ begin
   Resultado.add('interface');
   Resultado.add('');
   Resultado.add('uses');
-  Resultado.add('  Vcl.Forms,Vcl.Dialogs,Vcl.Controls,Vcl.Dialogs,Vcl.Controls');
-  Resultado.add('  Base, System.SysUtils, Atributos, System.Classes,Data.DB,');
-  Resultado.add('  uDM, FireDAC.Comp.Client,Vcl.DBGrids,');
+  Resultado.add('  System.SysUtils,');
+  Resultado.add('  System.Classes,');
+  Resultado.add('  Vcl.Forms,');
+  Resultado.add('  Vcl.Dialogs,');
+  Resultado.add('  Vcl.Controls,');
+  Resultado.add('  Vcl.DBGrids,');
+  Resultado.add('  Data.DB,');
+  Resultado.add('  FireDAC.Comp.Client,');
+  Resultado.add(' ');
+  Resultado.add('  uDM{SEU DATA MODULE}');
+  Resultado.add('  Base,');
+  Resultado.add('  Atributos;');
+  Resultado.add('{Fonte criado automaticamente pelo ORM by ANDERSON GAITOLINI}');
   Resultado.add('');
   Resultado.add('type');
   Resultado.add('  [attTabela(' + QuotedStr(FTabela) + ')]');
@@ -95,7 +114,12 @@ procedure TGerarClasse.GerarRodape;
 begin
   Resultado.Add('  end;');
   Resultado.Add('');
+  Resultado.Add('  var');
+  Resultado.Add('  OBJ_'+FTabela+': T' + FClasse + ';');
+  Resultado.Add('');
   Resultado.Add('implementation');
+  Resultado.Add('');
+  Resultado.Add('');
   Resultado.Add('');
   Resultado.Add('end.');
 end;

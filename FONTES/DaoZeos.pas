@@ -69,7 +69,7 @@ type
     constructor Create(Conexao: TZConnection);
     destructor Destroy; override;
 
-    function GerarClasse(ATabela, ANomeUnit, ANomeClasse: string): string;
+    function GerarClasse(ATabela, ANomeUnit, ANomeClasse: string; ADescrToTypes: Boolean=False; ASmlIntToBool: Boolean=False): string;
 
     // dataset para as consultas
     function ConsultaAll(ATabela: TTabela; AOrderBy: string = ''): TDataSet;
@@ -138,7 +138,7 @@ type
 implementation
 
 uses dialogs, system.TypInfo, System.Variants,
-     GerarClasseZEOSLIB,GerarClasse.BancoFirebird;
+     GerarClasse.BancoFirebird;
 //  GerarClasseFireDac, GerarClasse.BancoFirebird; {, GerarClasse.BancoMySQL;}
 
 { TQueryZeos }
@@ -285,7 +285,7 @@ begin
   inherited;
 end;
 
-function TDaoZ.GerarClasse(ATabela, ANomeUnit, ANomeClasse: string): string;
+function TDaoZ.GerarClasse(ATabela, ANomeUnit, ANomeClasse: string; ADescrToTypes: Boolean=False; ASmlIntToBool: Boolean=False): string;
 var
   NovaClasse: TGerarClasseZeosLib;
 begin

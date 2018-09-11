@@ -21,7 +21,7 @@ object foGeraClasse: TfoGeraClasse
     Width = 739
     Height = 41
     Align = alBottom
-    TabOrder = 0
+    TabOrder = 4
     object btnSalvar: TButton
       Left = 76
       Top = 1
@@ -29,7 +29,7 @@ object foGeraClasse: TfoGeraClasse
       Height = 39
       Align = alLeft
       Caption = 'Salvar'
-      TabOrder = 0
+      TabOrder = 1
       OnClick = btnSalvarClick
     end
     object btnSair: TButton
@@ -39,7 +39,7 @@ object foGeraClasse: TfoGeraClasse
       Height = 39
       Align = alRight
       Caption = 'Sair'
-      TabOrder = 1
+      TabOrder = 3
       OnClick = btnSairClick
     end
     object btnGerar: TButton
@@ -49,7 +49,7 @@ object foGeraClasse: TfoGeraClasse
       Height = 39
       Align = alLeft
       Caption = 'Gerar'
-      TabOrder = 2
+      TabOrder = 0
       OnClick = btnGerarClick
     end
     object btnExecPackage: TButton
@@ -59,7 +59,7 @@ object foGeraClasse: TfoGeraClasse
       Height = 39
       Align = alLeft
       Caption = 'Pacote'
-      TabOrder = 3
+      TabOrder = 2
     end
   end
   object Panel2: TPanel
@@ -68,7 +68,7 @@ object foGeraClasse: TfoGeraClasse
     Width = 739
     Height = 25
     Align = alTop
-    TabOrder = 1
+    TabOrder = 0
     object Label1: TLabel
       Left = 265
       Top = 1
@@ -114,7 +114,7 @@ object foGeraClasse: TfoGeraClasse
     Width = 739
     Height = 62
     Align = alTop
-    TabOrder = 2
+    TabOrder = 1
     object btn1: TSpeedButton
       Left = 366
       Top = 13
@@ -207,7 +207,7 @@ object foGeraClasse: TfoGeraClasse
       EditLabel.Width = 41
       EditLabel.Height = 13
       EditLabel.Caption = 'edFileBD'
-      TabOrder = 0
+      TabOrder = 1
     end
     object btnConexao: TJvSwitch
       Left = 402
@@ -215,7 +215,7 @@ object foGeraClasse: TfoGeraClasse
       Width = 157
       Height = 49
       Caption = 'Conectar'
-      TabOrder = 1
+      TabOrder = 0
       TextPosition = tpLeft
       OnClick = btnConexaoClick
     end
@@ -236,7 +236,27 @@ object foGeraClasse: TfoGeraClasse
     Width = 739
     Height = 59
     Align = alTop
-    TabOrder = 3
+    TabOrder = 2
+    ExplicitLeft = 1
+    ExplicitTop = 90
+    object cbSmlIntToBool: TCheckBox
+      Left = 5
+      Top = 37
+      Width = 212
+      Height = 17
+      Caption = 'Converter Type SmallInt to Boolean'
+      Checked = True
+      State = cbChecked
+      TabOrder = 1
+    end
+    object cbDescrToTypes: TCheckBox
+      Left = 5
+      Top = 22
+      Width = 221
+      Height = 17
+      Caption = 'Converter Descri'#231#245'es do SQL to Types'
+      TabOrder = 0
+    end
   end
   object pnlMain: TPanel
     Left = 0
@@ -245,13 +265,13 @@ object foGeraClasse: TfoGeraClasse
     Height = 304
     Align = alClient
     Caption = 'pnlMain'
-    TabOrder = 4
+    TabOrder = 3
     object pgc1: TPageControl
       Left = 1
       Top = 1
       Width = 737
       Height = 302
-      ActivePage = tsSQL
+      ActivePage = tsClass
       Align = alClient
       TabOrder = 0
       object tsClass: TTabSheet
@@ -277,7 +297,7 @@ object foGeraClasse: TfoGeraClasse
           PopupMenu = pm1
           TabOrder = 0
         end
-        object mmGerarSQL: TMemo
+        object mmGerarCLass: TMemo
           Left = 227
           Top = 0
           Width = 502
@@ -297,7 +317,7 @@ object foGeraClasse: TfoGeraClasse
       object tsSQL: TTabSheet
         Caption = 'Gera SQL'
         ImageIndex = 1
-        object mmGerarCLass: TMemo
+        object mmGerarSQL: TMemo
           Left = 227
           Top = 0
           Width = 502
@@ -311,7 +331,7 @@ object foGeraClasse: TfoGeraClasse
           ParentFont = False
           PopupMenu = pm1
           ScrollBars = ssVertical
-          TabOrder = 0
+          TabOrder = 1
         end
         object lstClasses: TListBox
           Left = 0
@@ -332,7 +352,7 @@ object foGeraClasse: TfoGeraClasse
             'Tabela 3')
           ParentFont = False
           PopupMenu = pm1
-          TabOrder = 1
+          TabOrder = 0
         end
       end
     end

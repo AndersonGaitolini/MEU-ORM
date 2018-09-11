@@ -57,7 +57,7 @@ type
     constructor Create(Conexao: TFDConnection; Transacao: TFDTransaction);
     destructor Destroy; override;
 
-    function GerarClasse(ATabela, ANomeUnit, ANomeClasse: string): string;
+    function GerarClasse(ATabela, ANomeUnit, ANomeClasse: string; ADescrToTypes: Boolean=False; ASmlIntToBool: Boolean=False): string;
 
     // dataset para as consultas
     function ConsultaAll(ATabela: TTabela; AOrderBy: string = ''): TDataSet;
@@ -277,14 +277,14 @@ begin
   inherited;
 end;
 
-function TDaoFD.GerarClasse(ATabela, ANomeUnit, ANomeClasse: string): string;
+function TDaoFD.GerarClasse(ATabela, ANomeUnit, ANomeClasse: string; ADescrToTypes, ASmlIntToBool: Boolean): string;
 var
   NovaClasse: TGerarClasseFireDac;
 begin
   NovaClasse := TGerarClasseFireDac.Create(TGerarClasseBancoFirebird.Create, Self);
 //  NovaClasse := TGerarClasseFireDac.Create(TGerarClasseBancoMySQL.Create, Self);
   try
-    Result := NovaClasse.Gerar(ATabela, ANomeUnit, ANomeClasse);
+    Result := NovaClasse.Gerar(ATabela, ANomeUnit, ANomeClasse, ADescrToTypes, ASmlIntToBool);
   finally
     NovaClasse.Free;
   end;

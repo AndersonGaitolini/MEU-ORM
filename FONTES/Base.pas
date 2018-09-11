@@ -111,7 +111,7 @@ Type
     function ExecutaQuery: Integer;
 
   // gerar classe
-    function GerarClasse(ATabela, ANomeUnit: string; ANomeClasse: string = ''): string;
+    function GerarClasse(ATabela, ANomeUnit: string; ANomeClasse: string = ''; ADescrToTypes: Boolean=False; ASmlIntToBool: Boolean=False): string;
 
   // pega campo autoincremento
     function GetID(ATabela:TTabela; ACampo: string): Integer;
@@ -159,8 +159,8 @@ Type
     //obtem sql com chave primárias
     function GetSQLCamposPK(ATabela: string): string;
 
-    procedure GerarFields(Ads: TDataSet; AResult: TStrings);
-    procedure GerarProperties(Ads: TDataSet; AResult: TStrings; ACamposPK: string);
+    procedure GerarFields(Ads: TDataSet; AResult: TStrings; ADescrToTypes, ASmlIntToBool: Boolean); overload;
+    procedure GerarProperties(Ads: TDataSet; AResult: TStrings; ACamposPK: string; ADescrToTypes, ASmlIntToBool: Boolean); overload;
   End;
 
 implementation

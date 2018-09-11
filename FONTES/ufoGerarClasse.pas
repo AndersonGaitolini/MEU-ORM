@@ -31,16 +31,18 @@ type
     mo: TSpeedButton;
     pnlConfig: TPanel;
     pnlMain: TPanel;
-    pgc1: TPageControl;
-    tsClass: TTabSheet;
-    tsSQL: TTabSheet;
-    lstTabelas: TListBox;
-    mmGerarSQL: TMemo;
-    mmGerarCLass: TMemo;
-    lstClasses: TListBox;
     btnExecPackage: TButton;
     edFileClass: TLabeledEdit;
     btnGetFileClass: TSpeedButton;
+    pgc1: TPageControl;
+    tsClass: TTabSheet;
+    lstTabelas: TListBox;
+    mmGerarCLass: TMemo;
+    tsSQL: TTabSheet;
+    mmGerarSQL: TMemo;
+    lstClasses: TListBox;
+    cbSmlIntToBool: TCheckBox;
+    cbDescrToTypes: TCheckBox;
     procedure btnSairClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure btnGerarClick(Sender: TObject);
@@ -78,7 +80,7 @@ implementation
 
 {$R *.dfm}
 
-uses uDMORM, uClassPerfilEmail, Atributos;//udmPrin;
+uses uDMORM, Atributos;//udmPrin;
 
 procedure TfoGeraClasse.CriaPacote;
 var
@@ -191,7 +193,7 @@ begin
   end;
 end;
 
-procedure TfoGeraClasse.btnGerarClick(Sender: TObject);
+Procedure TfoGeraClasse.btnGerarClick(Sender: TObject);
 begin
    if pgc1.ActivePage = tsSQL then
      GeraSQL
@@ -275,7 +277,7 @@ begin
   Unidade := Tabela;
   Classe  := Tabela;
 
-  mmGerarCLass.lines.Text := DM.Dao.GerarClasse(Tabela, Unidade, Classe);
+  mmGerarCLass.lines.Text := DM.Dao.GerarClasse(Tabela, Unidade, Classe, cbDescrToTypes.Checked, cbSmlIntToBool.Checked);
 
 end;
 

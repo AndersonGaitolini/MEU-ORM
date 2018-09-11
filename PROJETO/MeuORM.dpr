@@ -8,12 +8,9 @@ uses
   GerarClasse in '..\FONTES\GerarClasse.pas',
   uDMORM in '..\FONTES\uDMORM.pas' {DM: TDataModule},
   ufoGerarClasse in '..\FONTES\ufoGerarClasse.pas' {foGeraClasse},
-  DaoZeos in '..\FONTES\DaoZeos.pas',
-  GerarClasseZEOSLIB in '..\FONTES\GerarClasseZEOSLIB.pas',
   DaoFD in '..\FONTES\DaoFD.pas',
   GerarClasseFireDac in '..\FONTES\GerarClasseFireDac.pas',
   SplitView in '..\FONTES\SplitView.pas',
-  uClassPerfilEmail in '..\..\LOGLM\Fontes\Classes\uClassPerfilEmail.pas',
   GerarSQL.BancoFireBird in '..\FONTES\GerarSQL.BancoFireBird.pas';
 
 {$R *.res}

@@ -38,9 +38,9 @@ begin
 
   Ds :=  FDao.ConsultaSql(GerarClasseBanco.GetSQLCamposTabela(FTabela));
 
-  GerarClasseBanco.GerarFields(Ds, Resultado);
+  GerarClasseBanco.GerarFields(Ds, Resultado, FDescrToTypes,FSmlIntToBool);
 
-  GerarClasseBanco.GerarProperties(Ds, Resultado, GetCamposPK);
+  GerarClasseBanco.GerarProperties(Ds, Resultado, GetCamposPK, FDescrToTypes,FSmlIntToBool);
 end;
 
 function TGerarClasseFireDac.GetCamposPK: string;

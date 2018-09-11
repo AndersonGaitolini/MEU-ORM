@@ -21,21 +21,4 @@ object DM: TDM
     Left = 104
     Top = 37
   end
-  object conORM_ZEOS: TZConnection
-    ControlsCodePage = cCP_UTF16
-    Catalog = ''
-    HostName = '127.0.0.1'
-    Port = 3051
-    Database = 'E:\eSocial\RH-DB.FDB'
-    User = 'sysdba'
-    Password = 'masterkey'
-    Protocol = 'firebird-2.5'
-    Left = 32
-    Top = 94
-  end
-  object zqry1: TZQuery
-    Params = <>
-    Left = 94
-    Top = 97
-  end
 end
