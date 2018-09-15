@@ -1,0 +1,206 @@
+object Form1: TForm1
+  Left = 0
+  Top = 0
+  Caption = 'Form1'
+  ClientHeight = 480
+  ClientWidth = 640
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+  object pnlRodape: TPanel
+    Align = Bottom
+    Position.Y = 424.000000000000000000
+    Size.Width = 640.000000000000000000
+    Size.Height = 56.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object btnGerar: TButton
+      Align = Left
+      Size.Width = 89.000000000000000000
+      Size.Height = 56.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      Text = '&Gerar'
+      OnClick = btnGerarClick
+    end
+    object btnSalvar: TButton
+      Align = Left
+      Position.X = 89.000000000000000000
+      Size.Width = 89.000000000000000000
+      Size.Height = 56.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      Text = '&Salvar'
+    end
+  end
+  object pnlHeader: TPanel
+    Align = Top
+    Size.Width = 640.000000000000000000
+    Size.Height = 41.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    object lbl1: TLabel
+      Align = Left
+      Size.Width = 281.000000000000000000
+      Size.Height = 41.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.HorzAlign = Center
+      TextSettings.WordWrap = False
+      Text = 'Tabelas'
+    end
+    object lbl2: TLabel
+      Align = Client
+      Size.Width = 359.000000000000000000
+      Size.Height = 41.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.HorzAlign = Center
+      TextSettings.WordWrap = False
+      Text = 'Resulados'
+    end
+  end
+  object pnlMenu: TPanel
+    Align = Top
+    Position.Y = 41.000000000000000000
+    Size.Width = 640.000000000000000000
+    Size.Height = 80.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 3
+    object swtConexao: TSwitch
+      IsChecked = False
+      Position.X = 448.000000000000000000
+      Position.Y = 32.000000000000000000
+      TabOrder = 0
+      OnSwitch = swtConexaoSwitch
+    end
+    object edFileBD: TEdit
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      TabOrder = 1
+      Position.X = 16.000000000000000000
+      Position.Y = 24.000000000000000000
+      Size.Width = 233.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+    end
+    object btnOpen: TSpeedButton
+      Position.X = 256.000000000000000000
+      Position.Y = 24.000000000000000000
+      Size.Width = 33.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+      Text = '...'
+      OnClick = btnOpenClick
+    end
+    object cbDescrToTypes: TCheckBox
+      Position.X = 16.000000000000000000
+      Position.Y = 56.000000000000000000
+      TabOrder = 4
+      Text = 'cbDescrToTypes'
+    end
+    object cbSmlIntToBool: TCheckBox
+      Position.X = 152.000000000000000000
+      Position.Y = 60.000000000000000000
+      TabOrder = 3
+      Text = 'cbDescrToTypes'
+    end
+  end
+  object pnlMain: TPanel
+    Align = Client
+    Size.Width = 640.000000000000000000
+    Size.Height = 303.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+    object tab1: TTabControl
+      Align = Client
+      Size.Width = 640.000000000000000000
+      Size.Height = 303.000000000000000000
+      Size.PlatformDefault = False
+      TabIndex = 1
+      TabOrder = 0
+      TabPosition = PlatformDefault
+      object tabGeraClasse: TTabItem
+        CustomIcon = <
+          item
+          end>
+        IsSelected = False
+        Size.Width = 95.000000000000000000
+        Size.Height = 24.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        Text = 'tabGeraClasse'
+        object lstTabelas: TListBox
+          Align = Left
+          Size.Width = 281.000000000000000000
+          Size.Height = 279.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 0
+          DisableFocusEffect = True
+          DefaultItemStyles.ItemStyle = ''
+          DefaultItemStyles.GroupHeaderStyle = ''
+          DefaultItemStyles.GroupFooterStyle = ''
+          Viewport.Width = 277.000000000000000000
+          Viewport.Height = 275.000000000000000000
+        end
+        object mmGerarCLass: TMemo
+          Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+          DataDetectorTypes = []
+          Align = Client
+          Size.Width = 359.000000000000000000
+          Size.Height = 279.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 1
+          Viewport.Width = 355.000000000000000000
+          Viewport.Height = 275.000000000000000000
+        end
+      end
+      object tabGeraSQL: TTabItem
+        CustomIcon = <
+          item
+          end>
+        IsSelected = True
+        Size.Width = 83.000000000000000000
+        Size.Height = 24.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        Text = 'tabGeraSQL'
+        object lstClasses: TListBox
+          Align = Left
+          Size.Width = 200.000000000000000000
+          Size.Height = 279.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 0
+          DisableFocusEffect = True
+          DefaultItemStyles.ItemStyle = ''
+          DefaultItemStyles.GroupHeaderStyle = ''
+          DefaultItemStyles.GroupFooterStyle = ''
+          Viewport.Width = 196.000000000000000000
+          Viewport.Height = 275.000000000000000000
+        end
+        object mmGerarSQL: TMemo
+          Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+          DataDetectorTypes = []
+          Align = Client
+          Size.Width = 440.000000000000000000
+          Size.Height = 279.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 1
+          Viewport.Width = 436.000000000000000000
+          Viewport.Height = 275.000000000000000000
+        end
+      end
+    end
+  end
+  object dlgOpen1: TOpenDialog
+    Filter = 'ALL|*.*|FIREBIRD|*.FDB|ARQUIVO.PAS|*.PAS'
+    FilterIndex = 2
+    Left = 576
+    Top = 81
+  end
+  object dlgSalvar: TSaveDialog
+    DefaultExt = '.pas'
+    Filter = 'ALL|*.*|FIREBIRD|*.FDB|ARQUIVO.PAS|*.PAS'
+    FilterIndex = 3
+    Left = 592
+    Top = 169
+  end
+end
