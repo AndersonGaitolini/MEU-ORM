@@ -8,6 +8,7 @@ uses DB, SysUtils, Classes, Rtti, System.TypInfo,
 type
   TCamposArray = array of string;
   TFlagCampos = (fcAdd, fcIgnore);
+  TTypeproject = (tpVCL, tpFMX);
 
   TTabela = class(TPersistent)
   end;

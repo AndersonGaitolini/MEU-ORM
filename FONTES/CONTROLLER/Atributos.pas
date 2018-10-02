@@ -7,7 +7,7 @@ uses
   Base,
   Rtti,
   System.Classes,
-    {$IFDEF FMX}
+  {$IFDEF FMX}
    FMX.Dialogs;
    {$ELSE}
    VCL.Dialogs;

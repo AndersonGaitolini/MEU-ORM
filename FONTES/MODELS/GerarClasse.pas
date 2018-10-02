@@ -22,7 +22,8 @@ type
 
     function GetCamposPK: string; virtual; abstract;
 
-    procedure GerarCabecalho;
+    procedure GerarCabecalhoVCL;
+    procedure GerarCabecalhoFMX;
     procedure GerarFieldsProperties; virtual; abstract;
     procedure GerarRodape;
   public
@@ -33,8 +34,9 @@ type
     constructor Create(AClasseBanco: IBaseGerarClasseBanco);
     destructor Destroy; override;
 
-    function Gerar(ATabela, ANomeUnit: string;
-      ANomeClasse: string = ''; ADescrToTypes: Boolean=False; ASmlIntToBool: Boolean=False): string;
+    function Gerar(ATabela, ANomeUnit: string; ANomeClasse: string = '';
+                   ADescrToTypes: Boolean=False; ASmlIntToBool: Boolean=False;
+                   TipoProjeto : TTypeproject = tpVCL): string;
   end;
 
 implementation
@@ -61,7 +63,7 @@ begin
   inherited;
 end;
 
-function TGerarClasse.Gerar(ATabela, ANomeUnit, ANomeClasse: string; ADescrToTypes, ASmlIntToBool: Boolean): string;
+function TGerarClasse.Gerar(ATabela, ANomeUnit, ANomeClasse: string; ADescrToTypes, ASmlIntToBool: Boolean; TipoProjeto : TTypeproject): string;
 begin
   FTabela := ATabela;
   FSmlIntToBool := ASmlIntToBool;
@@ -74,7 +76,10 @@ begin
   else
     FClasse := Capitalize(ANomeClasse);
 
-  GerarCabecalho;
+  if TipoProjeto = tpVCL then
+    GerarCabecalhoVCL
+  else
+    GerarCabecalhoFMX;
 
   GerarFieldsProperties;
 
@@ -83,7 +88,34 @@ begin
   Result := Resultado.Text;
 end;
 
-procedure TGerarClasse.GerarCabecalho;
+procedure TGerarClasse.GerarCabecalhoFMX;
+begin
+Resultado.clear;
+  Resultado.add('unit ' + FUnit + ';');
+  Resultado.add('');
+  Resultado.add('interface');
+  Resultado.add('');
+  Resultado.add('uses');
+  Resultado.add('  System.SysUtils,');
+  Resultado.add('  System.Classes,');
+  Resultado.add('  Vcl.Forms,');
+  Resultado.add('  FMX.Dialogs,');
+  Resultado.add('  FMX.Controls,');
+  Resultado.add('  FMX.DBGrids,');
+  Resultado.add('  Data.DB,');
+  Resultado.add('  FireDAC.Comp.Client,');
+  Resultado.add(' ');
+  Resultado.add('  uDM{SEU DATA MODULE}');
+  Resultado.add('  Base,');
+  Resultado.add('  Atributos;');
+  Resultado.add('{Fonte criado automaticamente pelo ORM by ANDERSON GAITOLINI}');
+  Resultado.add('');
+  Resultado.add('type');
+  Resultado.add('  [attTabela(' + QuotedStr(FTabela) + ')]');
+  Resultado.add('  T' + FClasse + ' = class(TTabela)');
+end;
+
+procedure TGerarClasse.GerarCabecalhoVCL;
 begin
   Resultado.clear;
   Resultado.add('unit ' + FUnit + ';');
@@ -115,7 +147,7 @@ begin
   Resultado.Add('  end;');
   Resultado.Add('');
   Resultado.Add('  var');
-  Resultado.Add('  OBJ_'+FTabela+': T' + FClasse + ';');
+  Resultado.Add('  o'+FTabela+': T' + FClasse + ';');
   Resultado.Add('');
   Resultado.Add('implementation');
   Resultado.Add('');

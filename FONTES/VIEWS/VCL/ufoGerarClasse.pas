@@ -60,6 +60,7 @@ type
     lstClasses: TListBox;
     cbSmlIntToBool: TCheckBox;
     cbDescrToTypes: TCheckBox;
+    cbbVCLorFMX: TComboBox;
     procedure btnSairClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure btnGerarClick(Sender: TObject);

@@ -21,7 +21,7 @@ object foGeraClasse: TfoGeraClasse
     Width = 739
     Height = 41
     Align = alBottom
-    TabOrder = 4
+    TabOrder = 5
     object btnSalvar: TButton
       Left = 76
       Top = 1
@@ -262,7 +262,7 @@ object foGeraClasse: TfoGeraClasse
     Height = 304
     Align = alClient
     Caption = 'pnlMain'
-    TabOrder = 3
+    TabOrder = 4
     object pgc1: TPageControl
       Left = 1
       Top = 1
@@ -353,6 +353,19 @@ object foGeraClasse: TfoGeraClasse
         end
       end
     end
+  end
+  object cbbVCLorFMX: TComboBox
+    Left = 265
+    Top = 107
+    Width = 145
+    Height = 21
+    ItemIndex = 0
+    TabOrder = 3
+    Text = 'VCL'
+    Items.Strings = (
+      'VCL'
+      'FMX'
+      'AMBOS')
   end
   object Salvar: TSaveDialog
     Filter = '*.pas|Pascal File'

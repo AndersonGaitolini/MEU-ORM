@@ -785,7 +785,8 @@ begin
   begin
     Connection := FConexao;
     sql.Clear;
-    sql.Add('select max(' + ACampo + ') from ' + TAtributos.Get.PegaNomeTab(ATabela));
+    sql.Add('select coalesce max(' + ACampo + ',0)+1 from ' + TAtributos.Get.PegaNomeTab(ATabela));
+
     Open;
     Result := fields[0].AsInteger + 1;
   end;
